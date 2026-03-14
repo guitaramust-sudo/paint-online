@@ -1,0 +1,98 @@
+@import "./variables";
+
+.canvas {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+canvas {
+  border: 1px solid black;
+  background-color: #fff;
+}
+
+/* Индикатор ластика */
+.eraser-indicator {
+  position: absolute;
+  border: 2px solid white;
+  border-radius: 50%;
+  pointer-events: none; /* Чтобы не мешать кликам */
+  transform: translate(-50%, -50%); /* Центрируем относительно курсора */
+  z-index: 9999;
+  display: none; /* Скрыт по умолчанию */
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.5),
+    /* Внешняя тень для контраста */ 0 0 10px rgba(255, 255, 255, 0.5); /* Внутреннее свечение */
+  transition:
+    width 0.2s,
+    height 0.2s; /* Плавное изменение размера */
+  backdrop-filter: invert(
+    1
+  ); /* Инвертирует фон под индикатором для лучшей видимости */
+  mix-blend-mode: difference; /* Альтернативный способ сделать индикатор видимым на любом фоне */
+}
+
+/* Альтернативный стиль без mix-blend-mode (если нужна поддержка лучше) */
+.eraser-indicator {
+  position: absolute;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  display: none;
+  box-shadow:
+    0 0 0 2px #000,
+    0 0 0 4px #fff; /* Двойная обводка */
+  background: rgba(255, 255, 255, 0.1); /* Легкая полупрозрачная заливка */
+}
+
+/* Добавляем перекрестие */
+.eraser-indicator::before,
+.eraser-indicator::after {
+  content: "";
+  position: absolute;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 2px black;
+}
+
+.eraser-indicator::before {
+  width: 100%;
+  height: 1px;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.eraser-indicator::after {
+  width: 1px;
+  height: 100%;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.eraser-indicator.erasing {
+  animation: pulse 0.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Для canvas скрываем стандартный курсор */
+.canvas-with-eraser {
+  cursor: none;
+}

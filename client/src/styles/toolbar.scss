@@ -1,0 +1,77 @@
+@import "./variables";
+
+.toolbar {
+  height: $toolbar-height;
+  background-color: $toolbar-bg;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  box-shadow: $toolbar-shadow;
+  padding: 0 $toolbar-padding;
+  gap: $toolbar-gap;
+  z-index: 100;
+
+  &__btn {
+    width: $toolbar-btn-size;
+    height: $toolbar-btn-size;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    background: transparent center/60% no-repeat;
+    transition: all $transition-speed ease;
+
+    &:hover {
+      background-color: $toolbar-btn-hover-bg;
+      border-color: $toolbar-btn-border;
+      transform: scale($hover-scale);
+    }
+
+    &:active {
+      background-color: $toolbar-btn-active-bg;
+      transform: scale($active-scale);
+    }
+  }
+
+  &__btn_brush {
+    background-image: url($icon-brush);
+  }
+
+  &__btn_circle {
+    background-image: url($icon-circle);
+  }
+
+  &__btn_line {
+    background-image: url($icon-line);
+  }
+
+  &__btn_eraser {
+    background-image: url($icon-eraser);
+  }
+
+  &__btn_undo {
+    background-image: url($icon-undo);
+  }
+
+  &__btn_redo {
+    background-image: url($icon-redo);
+  }
+
+  &__btn_save {
+    background-image: url($icon-save);
+  }
+
+  .toolbar__btn_rect {
+    background-image: url(../assets/rect.svg); // или используй любой другой способ иконки
+  }
+
+  &__separator {
+    width: 1px;
+    height: $toolbar-separator-height;
+    background-color: $toolbar-separator-color;
+    margin: 0 10px;
+  }
+}

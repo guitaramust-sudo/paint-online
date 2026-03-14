@@ -1,0 +1,13 @@
+@import "./variables";
+
+.settingbar {
+  background-color: #fff;
+  display: flex;
+  align-content: center;
+  width: 100vw;
+  box-shadow: 0 -4px 5px gray;
+  position: fixed;
+  height: 5vh;
+  bottom: 0;
+  left: 0;
+}

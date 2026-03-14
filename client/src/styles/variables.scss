@@ -1,0 +1,32 @@
+$background-color: #f6f6f6;
+$toolbar-height: 40px;
+
+// Размеры
+$toolbar-height: 60px;
+$toolbar-btn-size: 40px;
+$toolbar-padding: 20px;
+$toolbar-gap: 15px;
+$toolbar-separator-height: 30px;
+
+// Цвета
+$toolbar-bg: #ffffff;
+$toolbar-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
+$toolbar-btn-hover-bg: #f0f0f0;
+$toolbar-btn-active-bg: #e0e0e0;
+$toolbar-btn-border: #ddd;
+$toolbar-separator-color: #e0e0e0;
+
+// Анимации
+$transition-speed: 0.2s;
+$hover-scale: 1.1;
+$active-scale: 0.95;
+
+// Пути к иконкам
+$icon-brush: "../assets/brush.svg";
+$icon-rect: "../assets/rect.svg";
+$icon-circle: "../assets/circle.svg";
+$icon-line: "../assets/line.svg";
+$icon-eraser: "../assets/eraser.svg";
+$icon-undo: "../assets/undo.svg";
+$icon-redo: "../assets/redo.svg";
+$icon-save: "../assets/save.svg";
