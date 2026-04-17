@@ -20,6 +20,7 @@ const Canvas = observer(() => {
   const usernameRef = useRef<HTMLInputElement>(null);
   const [modal, setModal] = useState(true);
   const params = useParams<CanvasParams>();
+  const userIdRef = useRef<string>("");
 
   // Генерируем уникальный ID для пользователя
   const generateUserId = () => {
@@ -27,32 +28,44 @@ const Canvas = observer(() => {
   };
 
   useEffect(() => {
-    canvasState.setCanvas(canvasRef.current);
+    if (canvasRef.current) {
+      canvasState.setCanvas(canvasRef.current);
+
+      // Устанавливаем размеры canvas
+      canvasRef.current.width = 1000;
+      canvasRef.current.height = 600;
+    }
   }, []);
 
   useEffect(() => {
     if (canvasState.username) {
-      const socket = new WebSocket("ws://10.223.160.166:12345/");
+      const socket = new WebSocket(`ws://${window.location.hostname}:12345/`);
       canvasState.setSocket(socket);
       canvasState.setId(params.id);
 
       // Генерируем userId
-      const userId = generateUserId();
+      userIdRef.current = generateUserId();
 
       // При создании WebSocket соединения
       socket.onopen = () => {
+        console.log("WebSocket connected");
         socket.send(
           JSON.stringify({
             id: params.id,
             username: canvasState.username,
             method: "connection",
-            userId: userId, // Используем сгенерированный ID
+            userId: userIdRef.current,
           }),
         );
       };
 
       socket.onmessage = (e) => {
         const msg = JSON.parse(e.data);
+
+        // Игнорируем свои собственные сообщения
+        if (msg.userId === userIdRef.current) {
+          return;
+        }
 
         switch (msg.method) {
           case "connection":
@@ -77,6 +90,16 @@ const Canvas = observer(() => {
           case "userConnected":
             console.log(msg.message);
             break;
+
+          case "userStartDrawing":
+            // Обработка начала рисования другого пользователя
+            handleUserStartDrawing(msg);
+            break;
+
+          case "userFinishDrawing":
+            // Обработка завершения рисования другого пользователя
+            handleUserFinishDrawing();
+            break;
         }
       };
 
@@ -96,6 +119,21 @@ const Canvas = observer(() => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canvasState.username, params.id]);
+
+  const handleUserStartDrawing = (msg: any) => {
+    const ctx = canvasRef.current?.getContext("2d");
+    if (ctx) {
+      ctx.beginPath();
+      ctx.moveTo(msg.x, msg.y);
+    }
+  };
+
+  const handleUserFinishDrawing = () => {
+    const ctx = canvasRef.current?.getContext("2d");
+    if (ctx) {
+      ctx.beginPath();
+    }
+  };
 
   const loadHistory = (history: any[]) => {
     const ctx = canvasRef.current?.getContext("2d");
@@ -138,6 +176,12 @@ const Canvas = observer(() => {
     if (!ctx) return;
 
     switch (figure.type) {
+      case "start":
+        // Начало рисования другого пользователя
+        ctx.beginPath();
+        ctx.moveTo(figure.x, figure.y);
+        break;
+
       case "brush":
         if (figure.x !== undefined && figure.y !== undefined) {
           Brush.draw(figure.x, figure.y, ctx);

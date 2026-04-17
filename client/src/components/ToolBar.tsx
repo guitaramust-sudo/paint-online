@@ -33,6 +33,7 @@ const ToolBar = () => {
         className="toolbar__btn"
         type="color"
         onChange={(e) => {
+          toolState.setColor(e.target.value);
           if (canvasState.socket) {
             canvasState.socket.send(
               JSON.stringify({
@@ -40,7 +41,8 @@ const ToolBar = () => {
                 id: params.id,
                 figure: {
                   type: "color",
-                  color: e.target.value,
+                  color: toolState.color,
+                  username: canvasState.username,
                 },
               }),
             );

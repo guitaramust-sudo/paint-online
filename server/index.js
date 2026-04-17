@@ -72,7 +72,6 @@ app.use((req, res, next) => {
     return next();
   }
 
-  // Отдаем index.html для всех остальных маршрутов
   res.sendFile(path.join(clientDistPath, "index.html"), (err) => {
     if (err) {
       console.error("Ошибка при отправке index.html:", err);
@@ -147,29 +146,38 @@ const connectionHandler = (ws, msg) => {
 };
 
 const drawHandler = (ws, msg) => {
-  // Сохраняем действие в историю сессии
-  if (sessions.has(msg.id)) {
-    const session = sessions.get(msg.id);
+  if (!sessions.has(msg.id)) return;
 
-    // Сохраняем в историю
-    session.history.push({
-      method: "draw",
-      figure: msg.figure,
-      username: msg.username,
-      timestamp: Date.now(),
-    });
+  const session = sessions.get(msg.id);
 
-    // Ограничиваем размер истории (опционально)
-    if (session.history.length > 1000) {
-      session.history = session.history.slice(-1000);
+  // Важно! Сохраняем ID отправителя
+  const senderId = ws.id;
+  const senderUsername = ws.username;
+
+  // Добавляем информацию об отправителе в сообщение
+  const enrichedMessage = {
+    ...msg,
+    senderId: senderId,
+    senderUsername: senderUsername,
+    timestamp: Date.now(),
+  };
+
+  // Сохраняем в историю
+  session.history.push(enrichedMessage);
+
+  // Рассылаем ВСЕМ клиентам (включая отправителя)
+  // Но на клиенте мы будем игнорировать свои сообщения
+  session.clients.forEach((client) => {
+    if (client.readyState === 1) {
+      client.send(JSON.stringify(enrichedMessage));
     }
+  });
 
-    console.log(`Рисование в сессии ${msg.id}: ${msg.figure.type}`);
+  // Ограничиваем историю
+  if (session.history.length > 1000) {
+    session.history = session.history.slice(-1000);
   }
-
-  broadcastToSession(ws, msg.id, msg, ws);
 };
-
 const clearHandler = (ws, msg) => {
   if (sessions.has(msg.id)) {
     sessions.get(msg.id).history = [];
